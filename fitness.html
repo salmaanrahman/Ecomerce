@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fitness - Zoomtex</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Background Slideshow */
+    .slideshow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .slideshow img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .slideshow img.active {
+      opacity: 1;
+    }
+
+    /* Transparent overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 10;
+    }
+
+    .sidebar .logo {
+      color: #f39c12;
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .sidebar .subtitle {
+      color: #ccc;
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-bottom: 40px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .menu a {
+      display: block;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 12px 15px;
+      text-decoration: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 14px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .menu a.active,
+    .menu a:hover {
+      background: #f39c12;
+      color: #000;
+    }
+
+    .bottom-icons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .bottom-icons button {
+      background: rgba(0,0,0,0.9);
+      border: none;
+      color: white;
+      font-size: 18px;
+      padding: 8px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .bottom-icons button:hover {
+      background: #f39c12;
+      color: black;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 260px;
+      right: 0;
+      height: 60px;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 30px;
+      gap: 20px;
+      z-index: 10;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 10px 15px;
+      border-radius: 4px;
+      transition: 0.3s;
+    }
+
+    .navbar a:hover {
+      background: #f39c12;
+      color: #000;
+    }
+
+    /* Main content */
+    .content {
+      margin-left: 260px;
+      padding: 40px;
+      z-index: 10;
+      position: relative;
+      color: white;
+    }
+
+    .content h1 {
+      color: #f39c12;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    /* Scrollable grid */
+    .product-grid {
+      height: calc(100vh - 140px);
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .product-scroll {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+
+    .product-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .product-card h2 {
+      margin: 15px 0 12px 0;
+      font-size: 20px;
+      color: #333;
+    }
+
+    .product-card .price {
+      color: #f39c12;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .product-card button {
+      background: #f39c12;
+      color: #000;
+      border: none;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .product-card button:hover {
+      background: #e67e22;
+      color: white;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Background Slideshow -->
+  <div class="slideshow">
+    <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1950&q=80" class="active" alt="Background 1">
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1950&q=80" alt="Background 2">
+    <img src="https://images.unsplash.com/photo-1519985176271-adb1088fa94c?auto=format&fit=crop&w=1950&q=80" alt="Background 3">
+    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80" alt="Background 4">
+  </div>
+
+  <div class="overlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div>
+      <a href="1stpage.html" class="logo">Zoomtex</a>
+      <div class="subtitle">STYLES</div>
+      <div class="menu">
+        <a href="summer.html">SUMMER LIFESTYLE</a>
+        <a href="winter.html">WINTER ESSENTIALS</a>
+        <a href="fitness.html" class="active">FITNESS</a>
+        <a href="workwear.html">WORKWEAR</a>
+      </div>
+    </div>
+
+    <div class="bottom-icons">
+      <button onclick="window.location.href='index.html'">🏠</button>
+      <button onclick="window.location.href='tel:+880123456789'">📞</button>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <a href="production.html">PRODUCTION</a>
+    <a href="process.html">PROCESS</a>
+    <a href="about.html">ABOUT US</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1>Fitness Collection 💪</h1>
+    <div class="product-grid">
+      <div class="product-scroll">
+        <!-- Product Cards -->
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=21" alt="Gym Shorts">
+          <h2>Gym Shorts</h2>
+          <p class="price">$20</p>
+          <button>Buy Now</button>
+        </div>
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=22" alt="Yoga Mat">
+          <h2>Yoga Mat</h2>
+          <p class="price">$25</p>
+          <button>Buy Now</button>
+        </div>
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=23" alt="Running Shoes">
+          <h2>Running Shoes</h2>
+          <p class="price">$50</p>
+          <button>Buy Now</button>
+        </div>
+
+           <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=1" alt="Product 1">
+          <h2>Cotton T-Shirt</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+
+
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=2" alt="Product 2">
+          <h2>Casual Shorts</h2>
+          <p class="price">$20</p>
+          <button>Buy Now</button>
+        </div>
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=3" alt="Product 3">
+          <h2>Summer Dress</h2>
+          <p class="price">$30</p>
+          <button>Buy Now</button>
+        </div>
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=4" alt="Product 4">
+          <h2>Sunglasses</h2>
+          <p class="price">$12</p>
+          <button>Buy Now</button>
+        </div>
+
+
+
+        <div class="product-card">
+          <img src="https://picsum.photos/300/220?random=24" alt="Fitness Gloves">
+          <h2>Fitness Gloves</h2>
+          <p class="price">$15</p>
+          <button>Buy Now</button>
+        </div>
+        <!-- Add more products here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Slideshow JS -->
+  <script>
+    let slides = document.querySelectorAll(".slideshow img");
+    let index = 0;
+    setInterval(() => {
+      slides[index].classList.remove("active");
+      index = (index + 1) % slides.length;
+      slides[index].classList.add("active");
+    }, 5000);
+  </script>
+
+</body>
+</html>
